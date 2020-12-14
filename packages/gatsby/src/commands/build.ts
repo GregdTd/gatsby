@@ -40,6 +40,8 @@ import {
 } from "../utils/webpack-status"
 import { updateSiteMetadata } from "gatsby-core-utils"
 
+require(`../timesum.js`)
+
 let cachedPageData
 let cachedWebpackCompilationHash
 if (process.env.GATSBY_EXPERIMENTAL_PAGE_BUILD_ON_DATA_CHANGES) {
@@ -95,6 +97,11 @@ module.exports = async function build(program: IBuildArgs): Promise<void> {
     parentSpan: buildSpan,
   })
 
+  if (console.timeSum) {
+    console.timeSumPrint()
+    console.timeSumReset()
+  }
+
   const graphqlRunner = new GraphQLRunner(store, {
     collectStats: true,
     graphqlTracing: program.graphqlTracing,
@@ -115,6 +122,11 @@ module.exports = async function build(program: IBuildArgs): Promise<void> {
     parentSpan: buildSpan,
     store,
   })
+
+  if (console.timeSum) {
+    console.timeSumPrint()
+    console.timeSumReset()
+  }
 
   await writeOutRequires({
     store,
@@ -205,6 +217,11 @@ module.exports = async function build(program: IBuildArgs): Promise<void> {
   await db.saveState()
 
   await waitUntilAllJobsComplete()
+
+  if (console.timeSum) {
+    console.timeSumPrint()
+    console.timeSumReset()
+  }
 
   // we need to save it again to make sure our latest state has been saved
   await db.saveState()
